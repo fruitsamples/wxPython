@@ -6,7 +6,7 @@
 // Author:      Robin Dunn
 //
 // Created:     1-May-2002
-// RCS-ID:      $Id: embedded.cpp,v 1.11 2004/05/28 19:59:29 RD Exp $
+// RCS-ID:      $Id: embedded.cpp,v 1.13 2005/05/11 16:18:25 RD Exp $
 // Copyright:   (c) 2002 by Total Control Software
 // Licence:     wxWindows license
 //----------------------------------------------------------------------
@@ -190,7 +190,7 @@ void MyFrame::OnPyFrame(wxCommandEvent& event)
     // First, whenever you do anything with Python objects or code, you
     // *MUST* aquire the Global Interpreter Lock and block other
     // Python threads from running.
-    bool blocked = wxPyBeginBlockThreads();
+    wxPyBlock_t blocked = wxPyBeginBlockThreads();
 
     // Execute the code in the __main__ module
     PyRun_SimpleString(python_code1);
@@ -211,7 +211,7 @@ import wx\n\
 output = wx.PyOnDemandOutputWindow()\n\
 sys.stdin = sys.stderr = output\n\
 ";
-    bool blocked = wxPyBeginBlockThreads();
+    wxPyBlock_t blocked = wxPyBeginBlockThreads();
     PyRun_SimpleString(python_redirect);
     wxPyEndBlockThreads(blocked);
 }
@@ -242,7 +242,7 @@ wxWindow* MyFrame::DoPythonStuff(wxWindow* parent)
     PyObject* result;
 
     // As always, first grab the GIL
-    bool blocked = wxPyBeginBlockThreads();
+    wxPyBlock_t blocked = wxPyBeginBlockThreads();
 
     // Now make a dictionary to serve as the global namespace when the code is
     // executed.  Put a reference to the builtins module in it.  (Yes, the
@@ -270,7 +270,7 @@ wxWindow* MyFrame::DoPythonStuff(wxWindow* parent)
     // Now build an argument tuple and call the Python function.  Notice the
     // use of another wxPython API to take a wxWindows object and build a
     // wxPython object that wraps it.
-    PyObject* arg = wxPyMake_wxObject(parent);
+    PyObject* arg = wxPyMake_wxObject(parent, false);
     wxASSERT(arg != NULL);
     PyObject* tuple = PyTuple_New(1);
     PyTuple_SET_ITEM(tuple, 0, arg);
@@ -299,9 +299,3 @@ wxWindow* MyFrame::DoPythonStuff(wxWindow* parent)
 
 
 //----------------------------------------------------------------------
-
-
-
-
-
-

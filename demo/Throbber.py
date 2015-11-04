@@ -69,21 +69,17 @@ class TestPanel(wx.Panel):
             pointSize = 8, family = wx.DEFAULT, style = wx.NORMAL, weight = wx.BOLD
             ))
 
-        # this throbber is created using a single, composite image
-        self.otherThrobber = throb.Throbber(
-            self, -1, throbImages.catalog['eclouds'].getBitmap(), frameDelay = 0.15, 
-            frames = 12, frameWidth = 48, label = "Stop"
-            )
-
-
-        self.otherThrobber.Bind(wx.EVT_LEFT_DOWN, self.OnClickThrobber)
-
+        self.customThrobber = \
+            throb.Throbber(self, -1, images, size=(36, 36),
+                           frameDelay = 0.1,
+                           rest = 4,
+                           sequence = [ 1, 5, 2, 7, 3, 6, 4, 4, 4, 4, 7, 2, 2, 0 ]
+                           )
+                                                
         box = wx.BoxSizer(wx.VERTICAL)
         sizer = wx.GridBagSizer()
         box.Add(sizer, 1, wx.EXPAND|wx.ALL, 5)
         sizer.AddGrowableCol(1)
-
-        sizer.Add(self.otherThrobber, (0, 2), (4, 1),flag = wx.ALIGN_CENTER_VERTICAL)
 
         row = 2
 
@@ -101,6 +97,18 @@ class TestPanel(wx.Panel):
 
             row += 1
 
+        # Add custom throbber to sizer.
+        row += 2
+        sizer.Add(
+            self.customThrobber, (row, 0), (1, 1), 
+            flag = wx.ALIGN_CENTER|wx.ALL, border=2
+            )
+
+        sizer.Add(
+            wx.StaticText(self, -1, 'with custom & manual sequences'), 
+            (row, 1), flag = wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_LEFT
+            )
+
         # start and stop buttons
         startButton = wx.Button(self, -1, "Start")
         self.Bind(wx.EVT_BUTTON, self.OnStartAnimation, startButton)
@@ -115,9 +123,54 @@ class TestPanel(wx.Panel):
             ])
 
         sizer.Add(
-            buttonBox, (len(self.throbbers) + 3, 0), (1, 3), flag = wx.ALIGN_CENTER
+            buttonBox, (len(self.throbbers) + 2, 0), (1, 3), flag = wx.ALIGN_CENTER
             )
 
+        # Buttoms for the custom throbber.
+        nextButton = wx.Button(self, -1, "Next")
+        self.Bind(wx.EVT_BUTTON, self.OnNext, nextButton)
+
+        prevButton = wx.Button(self, -1, "Previous")
+        self.Bind(wx.EVT_BUTTON, self.OnPrevious, prevButton)
+
+        incButton = wx.Button(self, -1, "Increment")
+        self.Bind(wx.EVT_BUTTON, self.OnIncrement, incButton)
+
+        decButton = wx.Button(self, -1, "Decrement")
+        self.Bind(wx.EVT_BUTTON, self.OnDecrement, decButton)
+
+        revButton = wx.Button(self, -1, "Reverse")
+        self.Bind(wx.EVT_BUTTON, self.OnReverse, revButton)
+
+        restButton = wx.Button(self, -1, "Rest")
+        self.Bind(wx.EVT_BUTTON, self.OnRest, restButton)
+
+        startButton = wx.Button(self, -1, "Start")
+        self.Bind(wx.EVT_BUTTON, self.OnStart, startButton)
+
+        stopButton = wx.Button(self, -1, "Stop")
+        self.Bind(wx.EVT_BUTTON, self.OnStop, stopButton)
+
+        customBox1 = wx.BoxSizer(wx.HORIZONTAL)
+        customBox1.AddMany([
+            (nextButton, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALL, 5),
+            (prevButton, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALL, 5),
+            (incButton, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALL, 5),
+            (decButton, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALL, 5),
+            (revButton, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALL, 5),
+            ])
+
+        customBox2 = wx.BoxSizer(wx.HORIZONTAL)
+        customBox2.AddMany([
+            (restButton, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALL, 5),
+            (startButton, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALL, 5),
+            (stopButton, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALL, 5),
+            ])
+
+        sizer.Add( customBox1, (len(self.throbbers) + 5, 0), (1, 3), flag = wx.ALIGN_CENTER )
+        sizer.Add( customBox2, (len(self.throbbers) + 6, 0), (1, 3), flag = wx.ALIGN_CENTER )
+
+        # Layout.
         self.SetSizer(box)
         self.SetAutoLayout(True)
         self.Layout()
@@ -126,9 +179,6 @@ class TestPanel(wx.Panel):
 
         for t in self.throbbers.keys():
             self.throbbers[t]['throbber'].Start()
-
-        self.otherThrobber.Start()
-        self.otherThrobber.Reverse()
 
         self.Bind(wx.EVT_WINDOW_DESTROY, self.OnDestroy)
 
@@ -144,16 +194,31 @@ class TestPanel(wx.Panel):
         for t in self.throbbers.keys():
             self.throbbers[t]['throbber'].Rest()
 
-    def OnClickThrobber(self, event):
-        if self.otherThrobber.Running():
-            self.otherThrobber.Rest()
-            self.otherThrobber.SetLabel("Start")
-        else:
-            self.otherThrobber.Start()
-            self.otherThrobber.SetLabel("Stop")
+    def OnNext(self, event):
+        self.customThrobber.Next()
+
+    def OnPrevious(self, event):
+        self.customThrobber.Previous()
+
+    def OnIncrement(self, event):
+        self.customThrobber.Increment()
+
+    def OnDecrement(self, event):
+        self.customThrobber.Decrement()
+
+    def OnReverse(self, event):
+        self.customThrobber.Reverse()
+
+    def OnRest(self, event):
+        self.customThrobber.Rest()
+
+    def OnStart(self, event):
+        self.customThrobber.Start()
+
+    def OnStop(self, event):
+        self.customThrobber.Stop()
 
     def ShutdownDemo(self):
-        self.otherThrobber.Rest()
         for t in self.throbbers.keys():
             self.throbbers[t]['throbber'].Rest()
 

@@ -47,14 +47,20 @@ class DragCanvas(wx.ScrolledWindow):
 
         self.SetCursor(wx.StockCursor(wx.CURSOR_ARROW))
         self.bg_bmp = images.getBackgroundBitmap()
+        self.SetBackgroundStyle(wx.BG_STYLE_CUSTOM)
 
         # Make a shape from an image and mask.  This one will demo
         # dragging outside the window
         bmp = images.getTestStarBitmap()
-        ##bmp = wx.Bitmap('bitmaps/toucan.png')
+        #bmp = wx.Bitmap('bitmaps/toucan.png')
         shape = DragShape(bmp)
         shape.pos = (5, 5)
         shape.fullscreen = True
+        self.shapes.append(shape)
+
+        bmp = images.getTheKidBitmap()
+        shape = DragShape(bmp)
+        shape.pos = (200, 5)
         self.shapes.append(shape)
 
         # Make a shape from some text
@@ -81,18 +87,6 @@ class DragCanvas(wx.ScrolledWindow):
         shape.pos = (5, 100)
         shape.text = "Some dragging text"
         self.shapes.append(shape)
-
-
-        # Make some shapes from some playing card images.
-        x = 200
-
-        for card in ['_01c_', '_12h_', '_13d_', '_10s_']:
-            bmpFunc = getattr(images, "get%sBitmap" % card)
-            bmp = bmpFunc()
-            shape = DragShape(bmp)
-            shape.pos = (x, 5)
-            self.shapes.append(shape)
-            x = x + 80
 
 
         self.Bind(wx.EVT_ERASE_BACKGROUND, self.OnEraseBackground)
@@ -142,21 +136,13 @@ class DragCanvas(wx.ScrolledWindow):
                 return shape
         return None
 
-    # Remove a shape from the display
-    def EraseShape(self, shape, dc):
-        r = shape.GetRect()
-        dc.SetClippingRect(r)
-        self.TileBackground(dc)
-        self.DrawShapes(dc)
-        dc.DestroyClippingRegion()
 
     # Clears the background, then redraws it. If the DC is passed, then
     # we only do so in the area so designated. Otherwise, it's the whole thing.
     def OnEraseBackground(self, evt):
         dc = evt.GetDC()
-
         if not dc:
-            dc = wxClientDC(self)
+            dc = wx.ClientDC(self)
             rect = self.GetUpdateRegion().GetBox()
             dc.SetClippingRect(rect)
         self.TileBackground(dc)
@@ -191,10 +177,8 @@ class DragCanvas(wx.ScrolledWindow):
         self.dragImage.EndDrag()
         self.dragImage = None
 
-        dc = wx.ClientDC(self)
-
         if self.hiliteShape:
-            self.hiliteShape.Draw(dc)
+            self.RefreshRect(self.hiliteShape.GetRect())
             self.hiliteShape = None
 
         # reposition and draw the shape
@@ -218,8 +202,9 @@ class DragCanvas(wx.ScrolledWindow):
             )
             
         self.dragShape.shown = True
-        self.dragShape.Draw(dc)
+        self.RefreshRect(self.dragShape.GetRect())
         self.dragShape = None
+
 
     # The mouse is moving
     def OnMotion(self, evt):
@@ -238,11 +223,11 @@ class DragCanvas(wx.ScrolledWindow):
             if dx <= tolerance and dy <= tolerance:
                 return
 
-            # erase the shape since it will be drawn independently now
-            dc = wx.ClientDC(self)
+            # refresh the area of the window where the shape was so it
+            # will get erased.
             self.dragShape.shown = False
-            self.EraseShape(self.dragShape, dc)
-
+            self.RefreshRect(self.dragShape.GetRect(), True)
+            self.Update()
 
             if self.dragShape.text:
                 self.dragImage = wx.DragString(self.dragShape.text,

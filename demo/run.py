@@ -6,7 +6,7 @@
 # Author:       Robin Dunn
 #
 # Created:      6-March-2000
-# RCS-ID:       $Id: run.py,v 1.27 2004/08/25 16:58:38 RD Exp $
+# RCS-ID:       $Id: run.py,v 1.33.2.1 2007/03/08 19:24:13 RD Exp $
 # Copyright:    (c) 2000 by Total Control Software
 # Licence:      wxWindows license
 #----------------------------------------------------------------------------
@@ -17,11 +17,12 @@ directory within its own frame window.  Just specify the module name
 on the command line.
 """
 
-import wx                  # This module uses the new wx namespace
+import wx
+import wx.lib.mixins.inspection
 import sys, os
 
 # stuff for debugging
-print "wx.VERSION_STRING = ", wx.VERSION_STRING
+print "wx.version:", wx.version()
 print "pid:", os.getpid()
 ##raw_input("Press Enter...")
 
@@ -39,7 +40,7 @@ class Log:
     write = WriteText
 
 
-class RunDemoApp(wx.App):
+class RunDemoApp(wx.App, wx.lib.mixins.inspection.InspectionMixin):
     def __init__(self, name, module, useShell):
         self.name = name
         self.demoModule = module
@@ -51,15 +52,16 @@ class RunDemoApp(wx.App):
         wx.Log_SetActiveTarget(wx.LogStderr())
 
         self.SetAssertMode(assertMode)
+        self.Init()  # InspectionMixin
 
         frame = wx.Frame(None, -1, "RunDemo: " + self.name, pos=(50,50), size=(200,100),
-                        style=wx.DEFAULT_FRAME_STYLE)
+                        style=wx.DEFAULT_FRAME_STYLE, name="run a sample")
         frame.CreateStatusBar()
 
         menuBar = wx.MenuBar()
         menu = wx.Menu()
-        item = menu.Append(-1, "E&xit\tAlt-X", "Exit demo")
-        self.Bind(wx.EVT_MENU, self.OnButton, item)
+        item = menu.Append(-1, "E&xit\tCtrl-Q", "Exit demo")
+        self.Bind(wx.EVT_MENU, self.OnExitApp, item)
         menuBar.Append(menu, "&File")
 
         ns = {}
@@ -85,20 +87,10 @@ class RunDemoApp(wx.App):
             frect = frame.GetRect()
 
         else:
-            # otherwise the demo made its own frame, so just put a
-            # button in this one
-            if hasattr(frame, 'otherWin'):
-                ns['win'] = frame.otherWin
-                frect = frame.otherWin.GetRect()
-                p = wx.Panel(frame, -1)
-                b = wx.Button(p, -1, " Exit ", (10,10))
-                wx.CallAfter(frame.SetClientSize, (200, 100))
-                frame.Bind(wx.EVT_BUTTON, self.OnButton, b)
-            else:
-                # It was probably a dialog or something that is already
-                # gone, so we're done.
-                frame.Destroy()
-                return True
+            # It was probably a dialog or something that is already
+            # gone, so we're done.
+            frame.Destroy()
+            return True
 
         self.SetTopWindow(frame)
         self.frame = frame
@@ -125,7 +117,7 @@ class RunDemoApp(wx.App):
         return True
 
 
-    def OnButton(self, evt):
+    def OnExitApp(self, evt):
         self.frame.Close(True)
 
 

@@ -198,8 +198,8 @@ class MegaImageRenderer(Grid.PyGridCellRenderer):
         self.table = table
         self._choices = [images.getSmilesBitmap,
                          images.getMondrianBitmap,
-                         images.get_10s_Bitmap,
-                         images.get_01c_Bitmap]
+                         images.getWXPdemoBitmap,
+                         ]
 
         self.colSize = None
         self.rowSize = None
@@ -354,7 +354,7 @@ class MegaGrid(Grid.Grid):
 
         self.Bind(wx.EVT_MENU, append, id=appendID)
         self.Bind(wx.EVT_MENU, delete, id=deleteID)
-        self.PopupMenu(menu, (x, yo))
+        self.PopupMenu(menu)
         menu.Destroy()
         return
 
@@ -388,7 +388,7 @@ class MegaGrid(Grid.Grid):
         if len(cols) == 1:
             self.Bind(wx.EVT_MENU, sort, id=sortID)
 
-        self.PopupMenu(menu, (xo, 0))
+        self.PopupMenu(menu)
         menu.Destroy()
         return
 

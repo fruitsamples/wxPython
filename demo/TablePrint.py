@@ -1,6 +1,5 @@
 
 import  os
-
 import  wx
 import  wx.lib.printout as  printout
 
@@ -9,6 +8,7 @@ import  wx.lib.printout as  printout
 buttonDefs = {
     814 : ('PreviewWide',      'Preview print of a wide table'),
     815 : ('PreviewNarrow',   'Preview print of a narrow table with color highlights'),
+    816 : ('PreviewText',    'Preview print of a text file'),
     818 : ('OnPreviewMatrix',   'Preview print of a narrow column grid without a table header'),
     817 : ('PreviewLine',   'Preview print to demonstrate the use of line breaks'),
     819 : ('PrintWide', 'Direct print (no preview) of a wide table'),
@@ -76,7 +76,7 @@ class TablePanel(wx.Panel):
 
         prt.SetHeader("wx.Windows Applications")
         prt.SetFooter()
-        prt.SetFooter("Date: ", type = "Date", align=wx.ALIGN_RIGHT, indent = -2, colour = wx.NamedColour('RED'))
+        prt.SetFooter("Date: ", type = "Date", align=wx.ALIGN_RIGHT, indent = -1, colour = wx.NamedColour('RED'))
         prt.Preview()
 
     def PreviewNarrow(self):
@@ -106,7 +106,7 @@ class TablePanel(wx.Panel):
         prt.label_font_colour = wx.NamedColour('WHITE')
         prt.SetHeader("wxWindows Applications", colour = wx.NamedColour('RED'))
 
-        prt.SetHeader("Printed: ", type = "Date & Time", align=wx.ALIGN_RIGHT, indent = -2, colour = wx.NamedColour('BLUE'))
+        prt.SetHeader("Printed: ", type = "Date & Time", align=wx.ALIGN_RIGHT, indent = -1, colour = wx.NamedColour('BLUE'))
         prt.SetFooter("Page No", colour = wx.NamedColour('RED'), type ="Num")
         prt.Preview()
 
@@ -148,6 +148,17 @@ class TablePanel(wx.Panel):
         prt.set_column = []
         prt.data = [["Row 1", "1", "2"], ["Row 2", "3", "4\nNew Line to see if it also can wrap around the cell region properly\nAnother new line"]]
         prt.SetFooter()
+        prt.Preview()
+
+    def PreviewText(self):
+        prt = printout.PrintTable(self.frame)
+        prt.SetHeader("PROCLAMATION")
+        file = open('data/proclamation.txt')
+        data = []
+        for txt in file:
+            data.append(txt.strip())
+        file.close()
+        prt.data = data
         prt.Preview()
 
     def PrintWide(self):

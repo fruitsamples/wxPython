@@ -122,23 +122,14 @@ class TestPanel(wx.Panel):
         self.Bind(wx.EVT_SPIN, self.OnSpin, self.spin)
 
         # button for calendar dialog test
-
-        wx.StaticText(self, -1, "Test Calendar Dialog", (350, 50), (150, -1))
-
-        bmp = images.getCalendarBitmap()
-        self.but1 = wx.BitmapButton(self, -1, bmp, (380, 80))
+        self.but1 = wx.Button(self, -1, "Test Calendar Dialog", (380, 80))
         self.Bind(wx.EVT_BUTTON, self.TestDlg, self.but1)
 
         # button for calendar window test
-
-        wx.StaticText(self, -1, "Test Calendar Window", (350, 150), (150, -1))
-
-        self.but2 = wx.BitmapButton(self, -1, bmp, (380, 180))
+        self.but2 = wx.Button(self, -1, "Test Calendar Window", (380, 180))
         self.Bind(wx.EVT_BUTTON, self.TestFrame, self.but2)
 
-        wx.StaticText(self, -1, "Test Calendar Print", (350, 250), (150, -1))
-
-        self.but3 = wx.BitmapButton(self, -1, bmp, (380, 280))
+        self.but3 = wx.Button(self, -1, "Test Calendar Print", (380, 280))
         self.Bind(wx.EVT_BUTTON, self.OnPreview, self.but3)
 
         # calendar dialog
@@ -550,10 +541,10 @@ class SetPrintout(wx.Printout):
         self.end_pg = 1
 
     def OnBeginDocument(self, start, end):
-        return self.base_OnBeginDocument(start, end)
+        return super(SetPrintout, self).OnBeginDocument(start, end)
 
     def OnEndDocument(self):
-        self.base_OnEndDocument()
+        super(SetPrintout, self).OnEndDocument()
 
     def HasPage(self, page):
         if page <= self.end_pg:
@@ -573,7 +564,7 @@ class SetPrintout(wx.Printout):
         return (str_pg, end_pg, str_pg, end_pg)
 
     def OnPreparePrinting(self):
-        self.base_OnPreparePrinting()
+        super(SetPrintout, self).OnPreparePrinting()
 
     def OnBeginPrinting(self):
         dc = self.GetDC()
@@ -590,7 +581,7 @@ class SetPrintout(wx.Printout):
         scaleY = float(h) / 1000
         self.printUserScale = min(scaleX, scaleY)
 
-        self.base_OnBeginPrinting()
+        super(SetPrintout, self).OnBeginPrinting()
 
     def GetSize(self):
         self.psizew, self.psizeh = self.GetPPIPrinter()

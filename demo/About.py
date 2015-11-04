@@ -30,7 +30,7 @@ sit back and enjoy.  Be sure to take a peek at the source code for each
 demo item so you can learn how to use the classes yourself.</p>
 
 <p><b>wxPython</b> is brought to you by <b>Robin Dunn</b> and<br>
-<b>Total Control Software,</b> Copyright (c) 1997-2004.</p>
+<b>Total Control Software,</b> Copyright (c) 1997-2006.</p>
 
 <p>
 <font size="-1">Please see <i>license.txt</i> for licensing information.</font>
@@ -50,10 +50,11 @@ demo item so you can learn how to use the classes yourself.</p>
         if "gtk2" in wx.PlatformInfo:
             html.SetStandardFonts()
         py_version = sys.version.split()[0]
-        html.SetPage(self.text % (wx.VERSION_STRING,
-                                  ", ".join(wx.PlatformInfo[1:]),
-                                  py_version
-                                  ))
+        txt = self.text % (wx.VERSION_STRING,
+                           ", ".join(wx.PlatformInfo[1:]),
+                           py_version
+                           )
+        html.SetPage(txt)
         btn = html.FindWindowById(wx.ID_OK)
         ir = html.GetInternalRepresentation()
         html.SetSize( (ir.GetWidth()+25, ir.GetHeight()+25) )

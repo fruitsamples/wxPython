@@ -57,8 +57,7 @@ class DoodleFrame(wx.Frame):
         box.Add(self.doodle, 1, wx.EXPAND)
 
         # Tell the frame that it should layout itself in response to
-        # size events.
-        self.SetAutoLayout(True)
+        # size events using this sizer.
         self.SetSizer(box)
 
 
@@ -352,7 +351,7 @@ instructions: </p>
 
 <p><b>SuperDoodle</b> and <b>wxPython</b> are brought to you by
 <b>Robin Dunn</b> and <b>Total Control Software</b>, Copyright
-&copy; 1997-2003.</p>
+&copy; 1997-2006.</p>
 </body>
 </html>
 '''

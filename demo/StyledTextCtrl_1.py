@@ -50,7 +50,7 @@ else:
     face1 = 'Helvetica'
     face2 = 'Times'
     face3 = 'Courier'
-    pb = 10
+    pb = 12
 
 
 #----------------------------------------------------------------------
@@ -177,6 +177,12 @@ def runTest(frame, nb, log):
     #ed.SetUseAntiAliasing(False)    
     #ed.SetViewEOL(True)
 
+    #ed.CmdKeyClear(stc.STC_KEY_BACK,
+    #               stc.STC_SCMOD_CTRL)
+    #ed.CmdKeyAssign(stc.STC_KEY_BACK,
+    #                stc.STC_SCMOD_CTRL,
+    #                stc.STC_CMD_DELWORDLEFT)
+
     ed.SetText(demoText)
 
     if wx.USE_UNICODE:
@@ -192,14 +198,24 @@ def runTest(frame, nb, log):
         ed.AddText('\tRussian: ')
         ed.AddText(unitext)
         ed.GotoPos(0)
-
+    #else:
+    #    #ed.StyleSetFontEncoding(stc.STC_STYLE_DEFAULT, wx.FONTENCODING_KOI8)
+    #    #text = u'\u041f\u0438\u0442\u043e\u043d - \u043b\u0443\u0447\u0448\u0438\u0439 \u044f\u0437\u044b\u043a \n\u043f\u0440\u043e\u0433\u0440\u0430\u043c\u043c\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u044f!'
+    #    #text = text.encode('koi8-r')
+    #    #ed.StyleSetFontEncoding(stc.STC_STYLE_DEFAULT, wx.FONTENCODING_BIG5)
+    #    #text = u'Python \u662f\u6700\u597d\u7684\u7de8\u7a0b\u8a9e\u8a00\uff01'
+    #    #text = text.encode('big5')
+    #    ed.GotoPos(ed.GetLength())
+    #    ed.AddText('\n\n' + text)
+        
     ed.EmptyUndoBuffer()
 
     # make some styles
     ed.StyleSetSpec(stc.STC_STYLE_DEFAULT, "size:%d,face:%s" % (pb, face3))
-    ed.StyleSetSpec(1, "size:%d,bold,face:%s,fore:#0000FF" % (pb+2, face1))
+    ed.StyleClearAll()
+    ed.StyleSetSpec(1, "size:%d,bold,face:%s,fore:#0000FF" % (pb, face1))
     ed.StyleSetSpec(2, "face:%s,italic,fore:#FF0000,size:%d" % (face2, pb))
-    ed.StyleSetSpec(3, "face:%s,bold,size:%d" % (face2, pb+2))
+    ed.StyleSetSpec(3, "face:%s,bold,size:%d" % (face2, pb))
     ed.StyleSetSpec(4, "face:%s,size:%d" % (face1, pb-1))
 
     # Now set some text to those styles...  Normally this would be
@@ -219,13 +235,12 @@ def runTest(frame, nb, log):
     # line numbers in the margin
     ed.SetMarginType(0, stc.STC_MARGIN_NUMBER)
     ed.SetMarginWidth(0, 22)
-    ed.StyleSetSpec(stc.STC_STYLE_LINENUMBER, "size:%d,face:%s" % (pb, face1))
+    ed.StyleSetSpec(stc.STC_STYLE_LINENUMBER, "size:%d,face:%s" % (pb-2, face1))
 
     # setup some markers
     ed.SetMarginType(1, stc.STC_MARGIN_SYMBOL)
     ed.MarkerDefine(0, stc.STC_MARK_ROUNDRECT, "#CCFF00", "RED")
-    #ed.MarkerDefine(1, stc.STC_MARK_CIRCLE, "FOREST GREEN", "SIENNA")
-    ed.MarkerDefineBitmap(1, images.getFolder1Bitmap())
+    ed.MarkerDefine(1, stc.STC_MARK_CIRCLE, "FOREST GREEN", "SIENNA")
     ed.MarkerDefine(2, stc.STC_MARK_SHORTARROW, "blue", "blue")
     ed.MarkerDefine(3, stc.STC_MARK_ARROW, "#00FF00", "#00FF00")
 
